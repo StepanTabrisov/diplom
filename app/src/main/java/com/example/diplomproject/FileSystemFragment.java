@@ -57,13 +57,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.parent_fs_fragment, container, false);
-        /*
-        Toolbar nav = getActivity().findViewById(R.id.nav_toolbar);
-        nav.setNavigationIcon(null);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(nav);
-        activity.getSupportActionBar().setTitle("Файлы");
-        */
+
         add = view.findViewById(R.id.f_add_fab);
         addFile = view.findViewById(R.id.f_add_file_fab);
         addFolder = view.findViewById(R.id.f_add_folder_fab);
