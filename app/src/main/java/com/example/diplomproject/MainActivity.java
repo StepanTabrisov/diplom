@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
 
+        //навигация снизу
         bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
+        //навигация сверху
         toolbarNavigation.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+    //поиск фрагмента INavigator
     @Override
     public void FindFragmentInStack(String tag) {
         lastFragment = nextFragment;
@@ -77,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements
         ChangeFragment(nextFragment, nextFragment.tag);
     }
 
+    //создание фрагмента INavigator
     @Override
     public void CreateFragment(String tag, String ret_tag, String title) {
         lastFragment = nextFragment;
@@ -84,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements
         ChangeFragment(nextFragment, nextFragment.tag);
     }
 
+    //смена фрагмента на экране
     public void ChangeFragment(Fragment fragment){
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
@@ -105,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
     }*/
 
+    //смена фрагмента на экране
     public void ChangeFragment(FileSystemFragment fragment, String tag){
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
@@ -136,8 +142,5 @@ public class MainActivity extends AppCompatActivity implements
     public void DeleteIcon() {
         toolbarNavigation.setNavigationIcon(null);
     }
-
-
-
 
 }

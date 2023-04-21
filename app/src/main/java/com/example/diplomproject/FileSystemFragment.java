@@ -32,7 +32,12 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     public String ret_tag;
     public String tempTitle;
 
+    ArrayList <ListElem> list = new ArrayList<ListElem>();
+    RecyclerAdapter adapter;
+    boolean open = false;
+
     public ArrayList<Unit> children = new ArrayList<>();
+    //RecyclerView recyclerView;
 
     FileSystemFragment(){
         super(R.layout.parent_fs_fragment);
@@ -47,13 +52,6 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         this.ret_tag = ret_tag;
         this.tempTitle = tempTitle;
     }
-
-    //RecyclerView recyclerView;
-
-    ArrayList <ListElem> list = new ArrayList<ListElem>();
-    RecyclerAdapter adapter;
-
-    boolean open = false;
 
     @Nullable
     @Override
@@ -70,9 +68,6 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         addFile = view.findViewById(R.id.f_add_file_fab);
         addFolder = view.findViewById(R.id.f_add_folder_fab);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
-
-
-
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //recyclerView.setHasFixedSize(true);
@@ -113,6 +108,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    // обработка нажатий на кнопки
     @Override
     public void onClick(View v) {
         switch(v.getId()){
@@ -128,6 +124,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    //обработка нажатия на элемент списка
     @Override
     public void onItemSelected(int position) {
         String name = list.get(position).name;
@@ -145,10 +142,10 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    //обработка нажатий на меню элемента
     @Override
     public void onMenuAction(int position, MenuItem item) {
         String name = list.get(position).name;
-
         switch (item.getItemId()) {
             case R.id.delete_menu:
                 Toast.makeText(getActivity(),"Удалить элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
@@ -159,12 +156,14 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    //обработка нажатия на кнопку скачать
     @Override
     public void onLoadAction(int position) {
         String name = list.get(position).name;
         Toast.makeText(getActivity(),"Скачать элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
     }
 
+    //добавление папки
     public void AddFolderButton(){
         Toast.makeText(getActivity(),"добавить папку",Toast.LENGTH_SHORT).show();
 
@@ -179,6 +178,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         open = false;
     }
 
+    //добавление файла
     void AddFileButton(){
         Toast.makeText(getActivity(),"добавить файл",Toast.LENGTH_SHORT).show();
 
@@ -191,6 +191,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         open = false;
     }
 
+    // показ кнопок
     void ShowButton(){
         if(open){
             addFile.setVisibility(View.INVISIBLE);
