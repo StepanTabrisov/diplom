@@ -43,6 +43,8 @@ public class SettingsFragment extends Fragment {
     public void onStart() {
         super.onStart();
         //((ICurrentFragment)getActivity()).SetFragment(this);
-        ((Navigator)getActivity()).SetIcon(R.drawable.ic_baseline_arrow_back_24);
+
+        //((Navigator)getActivity()).SetIcon(R.drawable.ic_baseline_arrow_back_24);
+        ((Navigator)getActivity()).DeleteIcon();
     }
 }

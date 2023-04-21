@@ -18,7 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class FileSystemFragment extends Fragment implements View.OnClickListener, RecyclerAdapter.OnItemSelectedListener {
 
@@ -29,11 +31,14 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     public String tag;
     public String ret_tag;
     public String tempTitle;
+
     public ArrayList<Unit> children = new ArrayList<>();
 
     FileSystemFragment(){
-
+        super(R.layout.parent_fs_fragment);
         tag = "parent";
+        ret_tag = "";
+        tempTitle = "Файлы";
     }
 
     public FileSystemFragment(String tag, String ret_tag, String tempTitle){
@@ -67,6 +72,8 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
 
 
+
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //recyclerView.setHasFixedSize(true);
         // создаем адаптер
@@ -94,6 +101,16 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         add.setOnClickListener(this);
         addFile.setOnClickListener(this);
         addFolder.setOnClickListener(this);
+
+        if(tag == "parent"){
+            //установка заголовка
+            ((ITitle)getActivity()).ChangeTitle("Файлы");
+            //удаление иконки назад
+            ((Navigator)getActivity()).DeleteIcon();
+        }else{
+            ((ITitle)getActivity()).ChangeTitle(tempTitle);
+            ((Navigator)getActivity()).SetIcon(R.drawable.ic_baseline_arrow_back_24);
+        }
     }
 
     @Override
@@ -116,8 +133,16 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         String name = list.get(position).name;
         Toast.makeText(getActivity(),"Выбран элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
 
-
-
+        ListElem curr = list.get(position);
+        if(curr.type == 1){
+            ((ICurrentFragment)getActivity()).SetFragment(this);
+            if(children.get(position).created){
+                ((Navigator)getActivity()).FindFragmentInStack(children.get(position).tag);
+            }else{
+                ((Navigator)getActivity()).CreateFragment(children.get(position).tag, children.get(position).ret_tag, curr.name);
+                children.get(position).created = true;
+            }
+        }
     }
 
     @Override
@@ -140,11 +165,14 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         Toast.makeText(getActivity(),"Скачать элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
     }
 
-    void AddFolderButton(){
+    public void AddFolderButton(){
         Toast.makeText(getActivity(),"добавить папку",Toast.LENGTH_SHORT).show();
 
-        list.add(new ListElem("Folder", "12kb", 1, R.drawable.folder2));
+        list.add(new ListElem("Folder" + Math.round(Math.random() * 200 - 100), "12kb", 1, R.drawable.folder2));
+        Collections.sort(list, new SortListItems());
         adapter.notifyDataSetChanged();
+
+        children.add(new Unit(UUID.randomUUID().toString(), tag, false));
 
         addFile.setVisibility(View.INVISIBLE);
         addFolder.setVisibility(View.INVISIBLE);
@@ -155,6 +183,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         Toast.makeText(getActivity(),"добавить файл",Toast.LENGTH_SHORT).show();
 
         list.add(new ListElem("File", "12kb", 0, R.drawable.file));
+        Collections.sort(list, new SortListItems());
         adapter.notifyDataSetChanged();
 
         addFile.setVisibility(View.INVISIBLE);

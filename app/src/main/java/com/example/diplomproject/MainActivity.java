@@ -16,45 +16,30 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 
-
 public class MainActivity extends AppCompatActivity implements
          ITitle, ICurrentFragment, Navigator {
 
     BottomNavigationView bottomNavigation;
     Toolbar toolbarNavigation;
-    Fragment lastFragment;
-    Fragment tempFragment;
-    Fragment settingsFragment;
-
-    boolean open = false;
-
-    public FloatingActionButton add;
-    public ExtendedFloatingActionButton addFolder;
-    public ExtendedFloatingActionButton addFile;
+    FileSystemFragment lastFragment;
+    FileSystemFragment nextFragment;
+    SettingsFragment settingsFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        /*if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }*/
-
-        /*add = findViewById(R.id.add_fab);
-        addFile = findViewById(R.id.add_file_fab);
-        addFolder = findViewById(R.id.add_folder_fab);
-        */
-
         settingsFragment = new SettingsFragment();
-        lastFragment = new FileSystemFragment();
+        nextFragment = new FileSystemFragment();
+        lastFragment = nextFragment;
 
         toolbarNavigation = findViewById(R.id.nav_toolbar);
         toolbarNavigation.setTitle("Файлы");
         setSupportActionBar(toolbarNavigation);
 
         bottomNavigation = findViewById(R.id.bottomNavigationView);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FileSystemFragment()).commit();
+        ChangeFragment(nextFragment, "parent");
     }
 
     @Override
@@ -66,10 +51,10 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.home:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FileSystemFragment()).commit();
+                        ChangeFragment((FileSystemFragment) nextFragment);
                         return true;
                     case R.id.settings:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment()).commit();
+                        ChangeFragment((SettingsFragment) settingsFragment);
                         return true;
                 }
                 return false;
@@ -79,20 +64,53 @@ public class MainActivity extends AppCompatActivity implements
         toolbarNavigation.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, lastFragment).commit();
+                FindFragmentInStack(nextFragment.ret_tag);
                 bottomNavigation.setSelectedItemId(R.id.home);
             }
         });
     }
 
+    @Override
+    public void FindFragmentInStack(String tag) {
+        lastFragment = nextFragment;
+        nextFragment = (FileSystemFragment) getSupportFragmentManager().findFragmentByTag(tag);
+        ChangeFragment(nextFragment, nextFragment.tag);
+    }
 
-    public Fragment FindFragmentInStack(){
-
-        return new Fragment();
+    @Override
+    public void CreateFragment(String tag, String ret_tag, String title) {
+        lastFragment = nextFragment;
+        nextFragment = new FileSystemFragment(tag, ret_tag, title);
+        ChangeFragment(nextFragment, nextFragment.tag);
     }
 
     public void ChangeFragment(Fragment fragment){
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FileSystemFragment()).commit();
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    /*public void ChangeFragment(FileSystemFragment fragment){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
+    }
+    public void ChangeFragment(SettingsFragment fr){
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container, fr)
+                .addToBackStack(null)
+                .commit();
+    }*/
+
+    public void ChangeFragment(FileSystemFragment fragment, String tag){
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container, fragment, tag)
+                .addToBackStack(null)
+                .commit();
     }
 
     //смена заголовка
@@ -103,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //смена фрагмента
     @Override
-    public void SetFragment(Fragment fr) {
+    public void SetFragment(FileSystemFragment fr) {
         lastFragment = fr;
     }
 
@@ -118,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements
     public void DeleteIcon() {
         toolbarNavigation.setNavigationIcon(null);
     }
+
+
 
 
 }
