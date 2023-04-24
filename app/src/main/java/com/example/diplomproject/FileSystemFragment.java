@@ -1,16 +1,20 @@
 package com.example.diplomproject;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +23,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 public class FileSystemFragment extends Fragment implements View.OnClickListener, RecyclerAdapter.OnItemSelectedListener {
@@ -143,9 +146,18 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         switch (item.getItemId()) {
             case R.id.delete_menu:
                 Toast.makeText(getActivity(),"Удалить элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
+
+                if(list.get(position).type == 1){
+                    list.remove(position);
+                    children.remove(position);
+                }else{
+                    list.remove(position);
+                }
+                adapter.notifyDataSetChanged();
                 break;
             case R.id.rename_menu:
                 Toast.makeText(getActivity(),"Переименовать элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
+                RenameCustomDialog(position);
                 break;
         }
     }
@@ -159,14 +171,9 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
 
     //добавление папки
     public void AddFolderButton(){
+        //диалог для ввода названия папки
+        AddFolderCustomDialog();
         Toast.makeText(getActivity(),"добавить папку",Toast.LENGTH_SHORT).show();
-
-        list.add(new ListElem("Folder" + Math.round(Math.random() * 200 - 100), "12kb", 1, R.drawable.folder2));
-        Collections.sort(list, new SortListItems());
-        adapter.notifyDataSetChanged();
-
-        children.add(new Unit(UUID.randomUUID().toString(), tag, false));
-
         addFile.setVisibility(View.INVISIBLE);
         addFolder.setVisibility(View.INVISIBLE);
         open = false;
@@ -198,5 +205,64 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
             open = true;
         }
     }
+
+    // диалог для добавления папки
+    void AddFolderCustomDialog() {
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.custom_dialog);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        Button d_add_folder = dialog.findViewById(R.id.dialog_add_button);
+        Button cancel = dialog.findViewById(R.id.dialog_cancel_button);
+        EditText nameFolder = dialog.findViewById(R.id.folder_name);
+        TextView title = dialog.findViewById(R.id.dialog_text);
+
+        title.setText("Новая папка");
+
+        d_add_folder.setOnClickListener(v -> {
+            String name_folder = nameFolder.getText().toString();
+            // добавление папки в список
+            list.add(new ListElem(name_folder, "12kb", 1, R.drawable.folder2));
+            Collections.sort(list, new SortListItems());
+            adapter.notifyDataSetChanged();
+            children.add(new Unit(UUID.randomUUID().toString(), tag, false));
+            dialog.cancel();
+        });
+        cancel.setOnClickListener(v -> dialog.cancel());
+        dialog.show();
+    }
+
+    // диалог
+    void RenameCustomDialog(int position) {
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.custom_dialog);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        Button d_add_folder = dialog.findViewById(R.id.dialog_add_button);
+        Button cancel = dialog.findViewById(R.id.dialog_cancel_button);
+        EditText nameFolder = dialog.findViewById(R.id.folder_name);
+        TextView title = dialog.findViewById(R.id.dialog_text);
+
+        title.setText("Переименовать");
+
+        d_add_folder.setOnClickListener(v -> {
+            String name_folder = nameFolder.getText().toString();
+            // изменение названия
+            list.get(position).name = name_folder;
+            adapter.notifyDataSetChanged();
+
+            if(children.get(position).created){
+                ((ITitle)getActivity()).ChangeFragmentTitle(name_folder, children.get(position).tag);
+            }
+
+            dialog.cancel();
+        });
+        cancel.setOnClickListener(v -> dialog.cancel());
+        dialog.show();
+    }
+
+
 
 }

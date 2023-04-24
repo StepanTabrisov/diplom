@@ -3,11 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/drawable/border.xml" value="0.2585" />
         <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/drawable/ic_baseline_folder_24.xml" value="0.2595" />
         <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/drawable/ic_baseline_insert_drive_file_24.xml" value="0.2595" />
         <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/layout/authorization_and_registration.xml" value="0.2" />
-        <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/layout/authorization_fragment.xml" value="0.2" />
+        <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/layout/authorization_fragment.xml" value="0.4" />
         <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/layout/child_fs_fragment.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/layout/custom_dialog.xml" value="0.4" />
         <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/layout/list_item.xml" value="0.4" />
         <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/layout/main_activity.xml" value="0.264" />
         <entry key="..\:/Users/stepa/AndroidStudioProjects/DiplomProject/app/src/main/res/layout/parent_fs_fragment.xml" value="0.264" />

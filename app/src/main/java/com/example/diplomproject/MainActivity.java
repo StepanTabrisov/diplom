@@ -125,6 +125,12 @@ public class MainActivity extends AppCompatActivity implements
         toolbarNavigation.setTitle(newTitle);
     }
 
+    @Override
+    public void ChangeFragmentTitle(String newTitle, String tag) {
+        nextFragment = (FileSystemFragment) getSupportFragmentManager().findFragmentByTag(tag);
+        nextFragment.tempTitle = newTitle;
+    }
+
     //смена фрагмента
     @Override
     public void SetFragment(FileSystemFragment fr) {
