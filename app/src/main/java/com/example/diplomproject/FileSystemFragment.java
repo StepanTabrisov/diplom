@@ -1,9 +1,14 @@
 package com.example.diplomproject;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +18,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -21,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
@@ -38,9 +48,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     ArrayList <ListElem> list = new ArrayList<ListElem>();
     RecyclerAdapter adapter;
     boolean open = false;
-
     public ArrayList<Unit> children = new ArrayList<>();
-    //RecyclerView recyclerView;
 
     FileSystemFragment(){
         super(R.layout.parent_fs_fragment);
@@ -179,13 +187,47 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         open = false;
     }
 
+
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        //Intent intent = result.getData();
+                        // Handle the Intent
+
+                        Uri uri = result.getData().getData();
+
+                        Cursor returnCursor = getContext().getContentResolver().query(uri, null, null, null, null);
+                        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+                        returnCursor.moveToFirst();
+                        long size = returnCursor.getLong(sizeIndex);
+                        String name = returnCursor.getString(nameIndex);
+
+                        if(name.endsWith("png")){
+                            System.out.println("png image");
+                        }
+
+                        list.add(new ListElem(name, ListElem.getReadableFileSize(size), 0, R.drawable.png_icon));
+                        Collections.sort(list, new SortListItems());
+                        adapter.notifyDataSetChanged();
+
+                    }
+                }
+            });
+
     //добавление файла
     void AddFileButton(){
         Toast.makeText(getActivity(),"добавить файл",Toast.LENGTH_SHORT).show();
 
-        list.add(new ListElem("File", "12kb", 0, R.drawable.file));
-        Collections.sort(list, new SortListItems());
-        adapter.notifyDataSetChanged();
+        Intent myFiles = new Intent(Intent.ACTION_GET_CONTENT);
+        myFiles.setType("*/*");
+        mStartForResult.launch(myFiles);
+
+        //list.add(new ListElem("File", "12kb", 0, R.drawable.file));
+        //Collections.sort(list, new SortListItems());
+        //adapter.notifyDataSetChanged();
 
         addFile.setVisibility(View.INVISIBLE);
         addFolder.setVisibility(View.INVISIBLE);
@@ -252,17 +294,12 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
             // изменение названия
             list.get(position).name = name_folder;
             adapter.notifyDataSetChanged();
-
             if(children.get(position).created){
                 ((ITitle)getActivity()).ChangeFragmentTitle(name_folder, children.get(position).tag);
             }
-
             dialog.cancel();
         });
         cancel.setOnClickListener(v -> dialog.cancel());
         dialog.show();
     }
-
-
-
 }
