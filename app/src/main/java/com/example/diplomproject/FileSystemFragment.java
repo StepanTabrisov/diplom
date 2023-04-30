@@ -197,7 +197,6 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
                         // Handle the Intent
 
                         Uri uri = result.getData().getData();
-
                         Cursor returnCursor = getContext().getContentResolver().query(uri, null, null, null, null);
                         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                         int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
@@ -205,17 +204,15 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
                         long size = returnCursor.getLong(sizeIndex);
                         String name = returnCursor.getString(nameIndex);
 
-                        if(name.endsWith("png")){
-                            System.out.println("png image");
-                        }
+                        int resourceImage = GetImageRes(name);
 
-                        list.add(new ListElem(name, ListElem.getReadableFileSize(size), 0, R.drawable.png_icon));
+                        list.add(new ListElem(name, ListElem.getReadableFileSize(size), 0, resourceImage));
                         Collections.sort(list, new SortListItems());
                         adapter.notifyDataSetChanged();
-
                     }
                 }
             });
+
 
     //добавление файла
     void AddFileButton(){
@@ -224,10 +221,6 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         Intent myFiles = new Intent(Intent.ACTION_GET_CONTENT);
         myFiles.setType("*/*");
         mStartForResult.launch(myFiles);
-
-        //list.add(new ListElem("File", "12kb", 0, R.drawable.file));
-        //Collections.sort(list, new SortListItems());
-        //adapter.notifyDataSetChanged();
 
         addFile.setVisibility(View.INVISIBLE);
         addFolder.setVisibility(View.INVISIBLE);
@@ -265,7 +258,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         d_add_folder.setOnClickListener(v -> {
             String name_folder = nameFolder.getText().toString();
             // добавление папки в список
-            list.add(new ListElem(name_folder, "12kb", 1, R.drawable.folder2));
+            list.add(new ListElem(name_folder, "12kb", 1, R.drawable.folder_icon2));
             Collections.sort(list, new SortListItems());
             adapter.notifyDataSetChanged();
             children.add(new Unit(UUID.randomUUID().toString(), tag, false));
@@ -301,5 +294,43 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         });
         cancel.setOnClickListener(v -> dialog.cancel());
         dialog.show();
+    }
+
+    // получение иконки
+    int GetImageRes(String name){
+        int resImage = 0;
+        if(name.endsWith("png")){
+            System.out.println("png image");
+            resImage = R.drawable.png_icon;
+        }
+        if(name.endsWith("doc")){
+            System.out.println("doc image");
+            resImage = R.drawable.doc_icon;
+        }
+        if(name.endsWith("mp3")){
+            System.out.println("mp3 image");
+            resImage = R.drawable.mp3_icon;
+        }
+        if(name.endsWith("mp4")){
+            System.out.println("mp4 image");
+            resImage = R.drawable.mp4_icon;
+        }
+        if(name.endsWith("pdf")){
+            System.out.println("pdf image");
+            resImage = R.drawable.pdf_icon;
+        }
+        if(name.endsWith("ppt")){
+            System.out.println("ppt image");
+            resImage = R.drawable.ppt_icon;
+        }
+        if(name.endsWith("txt")){
+            System.out.println("txt image");
+            resImage = R.drawable.txt_icon;
+        }
+        if(name.endsWith("xls")){
+            System.out.println("xls image");
+            resImage = R.drawable.xls_icon;
+        }
+        return  resImage;
     }
 }
