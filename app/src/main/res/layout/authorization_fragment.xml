@@ -10,14 +10,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Авторизация"
-
-        android:textColor="#000000"
-        android:textSize="20sp"
+        android:textColor="#157dc3"
+        android:textSize="24sp"
+        android:textStyle=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.127" />
+        app:layout_constraintVertical_bias="0.183" />
 
     <EditText
         android:id="@+id/a_input_login"
@@ -27,12 +27,14 @@
         android:hint="Логин"
         android:inputType="textPersonName"
         android:text=""
+        android:backgroundTint="#157dc3"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.312" />
+        app:layout_constraintVertical_bias="0.34" />
 
     <EditText
         android:id="@+id/a_input_password"
@@ -40,19 +42,30 @@
         android:layout_height="50dp"
         android:ems="10"
         android:hint="Пароль"
+        android:backgroundTint="#157dc3"
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.474" />
+        app:layout_constraintVertical_bias="0.475" />
 
     <Button
         android:id="@+id/a_enter_button"
-        android:layout_width="300dp"
+        android:layout_width="250dp"
         android:layout_height="50dp"
         android:text="Вход"
+        android:textColor="#1f88ce"
+
+        app:cornerRadius="20dp"
+        app:strokeColor="#1f88ce"
+        app:strokeWidth="0.7dp"
+        app:backgroundTint="@android:color/white"
+
+        android:elevation="15dp"
+        android:stateListAnimator="@null"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -65,12 +78,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/underline_reg"
-        android:textColor="#000000"
+        android:textColor="#757575"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.717" />
+        app:layout_constraintVertical_bias="0.708" />
 </androidx.constraintlayout.widget.ConstraintLayout>

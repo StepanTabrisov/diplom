@@ -27,6 +27,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="75dp"
                 android:hint="Название"
+                android:backgroundTint="#157dc3"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -40,11 +41,20 @@
                 android:layout_marginEnd="32dp"
                 android:layout_marginBottom="32dp"
                 android:text="Добавить"
+
+                android:textColor="#1f88ce"
+
+                app:cornerRadius="20dp"
+                app:strokeColor="#1f88ce"
+                app:strokeWidth="0.7dp"
+                app:backgroundTint="@android:color/white"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/folder_name" />
+                app:layout_constraintTop_toBottomOf="@+id/folder_name"
+                app:layout_constraintVertical_bias="1.0" />
 
             <Button
                 android:id="@+id/dialog_cancel_button"
@@ -54,6 +64,14 @@
                 android:layout_marginTop="28dp"
                 android:layout_marginBottom="32dp"
                 android:text="Отмена"
+
+                android:textColor="#ff3f51"
+
+                app:cornerRadius="20dp"
+                app:strokeColor="#ff0c22"
+                app:strokeWidth="0.7dp"
+                app:backgroundTint="@android:color/white"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/dialog_add_button"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -64,7 +82,7 @@
                 android:id="@+id/dialog_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
+                android:textColor="#757575"
                 android:textSize="18sp"
                 android:text="Новая папка"
                 app:layout_constraintBottom_toTopOf="@+id/folder_name"

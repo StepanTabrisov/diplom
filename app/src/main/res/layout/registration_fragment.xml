@@ -10,8 +10,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Регистрация"
-        android:textColor="#000000"
-        android:textSize="20sp"
+        android:textColor="#157dc3"
+        android:textSize="24sp"
+        android:textStyle=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,6 +25,7 @@
         android:layout_height="50dp"
         android:ems="10"
         android:inputType="textPersonName"
+        android:backgroundTint="#157dc3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
@@ -34,9 +36,21 @@
 
     <Button
         android:id="@+id/registration_button"
-        android:layout_width="300dp"
+        android:layout_width="250dp"
         android:layout_height="50dp"
         android:text="Регистрация"
+
+        android:textColor="#1f88ce"
+
+        app:cornerRadius="20dp"
+        app:strokeColor="#1f88ce"
+        app:strokeWidth="0.7dp"
+        app:backgroundTint="@android:color/white"
+
+        android:elevation="15dp"
+        android:stateListAnimator="@null"
+
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -49,34 +63,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Повторите пароль"
-        android:textColor="#000000"
-        android:textSize="14sp"
+        android:textColor="#616161"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.193"
+        app:layout_constraintHorizontal_bias="0.198"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.707" />
+        app:layout_constraintVertical_bias="0.706" />
 
     <TextView
         android:id="@+id/register_label5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Пароль"
-        android:textColor="#000000"
-        android:textSize="14sp"
+        android:textColor="#616161"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.154"
+        app:layout_constraintHorizontal_bias="0.155"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.573" />
+        app:layout_constraintVertical_bias="0.572" />
 
     <EditText
         android:id="@+id/r_input_email"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:ems="10"
+        android:backgroundTint="#157dc3"
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -91,33 +106,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Почта"
-        android:textColor="#000000"
-        android:textSize="14sp"
+        android:textColor="#616161"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.15"
+        app:layout_constraintHorizontal_bias="0.151"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.443" />
+        app:layout_constraintVertical_bias="0.444" />
 
     <TextView
         android:id="@+id/register_label3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Логин"
-        android:textColor="#000000"
-        android:textSize="14sp"
+        android:textColor="#616161"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.15"
+        app:layout_constraintHorizontal_bias="0.151"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.311" />
+        app:layout_constraintVertical_bias="0.312" />
 
     <EditText
         android:id="@+id/r_input_name"
         android:layout_width="300dp"
         android:layout_height="50dp"
+        android:backgroundTint="#157dc3"
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -133,20 +149,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Имя"
-        android:textColor="#000000"
-        android:textSize="14sp"
+        android:textColor="#616161"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.146"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.182" />
+        app:layout_constraintVertical_bias="0.181" />
 
     <EditText
         android:id="@+id/r_input_password"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:ems="10"
+        android:backgroundTint="#157dc3"
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -161,6 +178,7 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:ems="10"
+        android:backgroundTint="#157dc3"
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

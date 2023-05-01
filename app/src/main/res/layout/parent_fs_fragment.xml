@@ -11,14 +11,9 @@
         android:layout_width="409dp"
         android:layout_height="729dp"
 
-        android:layout_marginStart="1dp"
-
-        android:layout_marginTop="1dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="1dp"
         android:clickable="true"
         android:focusable="true"
-        android:paddingTop="?attr/actionBarSize"
+        android:paddingTop="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,48 +21,69 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/f_add_fab"
-        android:layout_width="wrap_content"
+        android:layout_width="56dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+
+        android:layout_marginBottom="4dp"
+        android:backgroundTint="@color/white"
         android:clickable="true"
         android:visibility="visible"
+
+        app:backgroundTint="#1f88ce"
+        app:borderWidth="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.881"
+        app:layout_constraintHorizontal_bias="0.997"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.93"
+        app:layout_constraintVertical_bias="0.998"
         app:srcCompat="@drawable/ic_baseline_add_24"
+        app:tint="#1f88ce"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/f_add_file_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="24dp"
+
+        android:backgroundTint="@color/white"
         android:clickable="true"
         android:visibility="invisible"
+        app:backgroundTint="#1f88ce"
+
+        app:borderWidth="1dp"
         app:layout_constraintBottom_toTopOf="@+id/f_add_fab"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.881"
+        app:layout_constraintHorizontal_bias="0.997"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/ic_baseline_insert_drive_file_24"
+        app:tint="#1f88ce"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/f_add_folder_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+
         android:clickable="true"
         android:visibility="invisible"
+        app:backgroundTint="#1f88ce"
+        app:borderWidth="1dp"
+
         app:layout_constraintBottom_toTopOf="@+id/f_add_file_fab"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.881"
+        app:layout_constraintHorizontal_bias="0.974"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.946"
+        app:layout_constraintVertical_bias="0.953"
         app:srcCompat="@drawable/ic_baseline_folder_24"
+        app:tint="#1f88ce"
         tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

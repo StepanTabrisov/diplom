@@ -69,6 +69,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.parent_fs_fragment, container, false);
 
+        //add= getActivity().findViewById(R.id.add_fab);
         add = view.findViewById(R.id.f_add_fab);
         addFile = view.findViewById(R.id.f_add_file_fab);
         addFolder = view.findViewById(R.id.f_add_folder_fab);
@@ -98,6 +99,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     @Override
     public void onStart() {
         super.onStart();
+
         add.setOnClickListener(this);
         addFile.setOnClickListener(this);
         addFolder.setOnClickListener(this);
@@ -187,7 +189,6 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         open = false;
     }
 
-
     ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -204,6 +205,8 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
                         long size = returnCursor.getLong(sizeIndex);
                         String name = returnCursor.getString(nameIndex);
 
+                        System.out.println(name);
+                        System.out.println(uri);
                         int resourceImage = GetImageRes(name);
 
                         list.add(new ListElem(name, ListElem.getReadableFileSize(size), 0, resourceImage));
@@ -299,7 +302,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     // получение иконки
     int GetImageRes(String name){
         int resImage = 0;
-        if(name.endsWith("png")){
+        if (name.endsWith("png")) {
             System.out.println("png image");
             resImage = R.drawable.png_icon;
         }
