@@ -87,13 +87,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_menu"
 
-
         android:background="@drawable/border"
 
         android:layout_marginTop="30dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginStart="00dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
         android:elevation="20dp"
         android:stateListAnimator="@null"
 
