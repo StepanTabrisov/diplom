@@ -7,10 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterFragment extends Fragment {
 
@@ -40,9 +45,36 @@ public class RegisterFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        RetrofitService retrofitService  = new RetrofitService();
+        NetworkApi networkApi = retrofitService.getRetrofit().create(NetworkApi.class);
+
         regButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String name = inputName.getText().toString();
+                String login = inputLogin.getText().toString();
+                String email = inputEmail.getText().toString();
+                String password = inputPassword.getText().toString();
+
+                UserData user = new UserData();
+                user.SetName(name);
+                user.SetLogin(login);
+                user.SetEmail(email);
+                user.SetPassword(password);
+
+                networkApi.addNewUser(user).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Toast.makeText(getActivity(), "Users add success", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 startActivity(new Intent(getContext(), MainActivity.class));
             }
         });

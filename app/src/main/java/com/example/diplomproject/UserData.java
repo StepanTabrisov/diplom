@@ -2,6 +2,7 @@ package com.example.diplomproject;
 
 public class UserData {
 
+    private int id;
     private String name;
     private String login;
     private String email;
@@ -16,6 +17,17 @@ public class UserData {
         //this.acceptPassword = "";
     }
 
+    @Override
+    public String toString() {
+        return "UserData{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", login='" + login + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
+
     UserData(String name, String login, String email, String password){
         this.name = name;
         this.login = login;
@@ -25,6 +37,14 @@ public class UserData {
 
     UserData(String name, String login, String email, String password, String acceptPassword){
 
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void SetName(String name){
@@ -66,4 +86,5 @@ public class UserData {
     public static void CheckPassword(String password) {
 
     }
+
 }
