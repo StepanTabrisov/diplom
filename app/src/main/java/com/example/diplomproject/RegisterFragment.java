@@ -63,7 +63,7 @@ public class RegisterFragment extends Fragment {
                 user.SetEmail(email);
                 user.SetPassword(password);
 
-                networkApi.addNewUser(user).enqueue(new Callback<Void>() {
+                networkApi.RegistrationUser(user).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         Toast.makeText(getActivity(), "Users add success", Toast.LENGTH_SHORT).show();

@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +56,7 @@ public class EnterFragment extends Fragment {
                 String password = inputPassword.getText().toString();
                 System.out.println(login);
 
-                networkApi.findUserByLogin(login).enqueue(new Callback<UserData>() {
+                networkApi.CheckUserData(login.trim()).enqueue(new Callback<UserData>() {
                     @Override
                     public void onResponse(Call<UserData> call, Response<UserData> response) {
                         Toast.makeText(getActivity(), "User find", Toast.LENGTH_SHORT).show();
@@ -69,10 +68,10 @@ public class EnterFragment extends Fragment {
                     @Override
                     public void onFailure(Call<UserData> call, Throwable t) {
                         Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
-                        Logger.getLogger(getActivity().getClass().getName()).log(Level.SEVERE, "Error ocured", t);
+                        System.out.println(t.getMessage());
+                        Logger.getLogger(getActivity().getClass().getName()).log(Level.SEVERE, "Error find", t);
                     }
                 });
-
 
                /* networkApi.getAllUsers().enqueue(new Callback<List<UserData>>() {
                     @Override
