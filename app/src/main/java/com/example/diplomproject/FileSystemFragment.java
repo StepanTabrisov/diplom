@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,8 +36,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class FileSystemFragment extends Fragment implements View.OnClickListener, RecyclerAdapter.OnItemSelectedListener {
 
+    private static final int BUFFER_SIZE = 1024 * 2;
     FloatingActionButton add;
     FloatingActionButton addFile;
     FloatingActionButton addFolder;
@@ -69,7 +79,6 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.parent_fs_fragment, container, false);
 
-        //add= getActivity().findViewById(R.id.add_fab);
         add = view.findViewById(R.id.f_add_fab);
         addFile = view.findViewById(R.id.f_add_file_fab);
         addFolder = view.findViewById(R.id.f_add_folder_fab);
@@ -194,20 +203,18 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        //Intent intent = result.getData();
-                        // Handle the Intent
-
                         Uri uri = result.getData().getData();
+
                         Cursor returnCursor = getContext().getContentResolver().query(uri, null, null, null, null);
                         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                         int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
                         returnCursor.moveToFirst();
+
                         long size = returnCursor.getLong(sizeIndex);
                         String name = returnCursor.getString(nameIndex);
-
-                        System.out.println(name);
-                        System.out.println(uri);
                         int resourceImage = GetImageRes(name);
+
+                        UploadFile(uri, name);
 
                         list.add(new ListElem(name, ListElem.getReadableFileSize(size), 0, resourceImage));
                         Collections.sort(list, new SortListItems());
@@ -216,6 +223,40 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
                 }
             });
 
+    private void UploadFile(Uri uri, String name) {
+        RetrofitService retrofitService  = new RetrofitService();
+        NetworkApi networkApi = retrofitService.getRetrofit().create(NetworkApi.class);
+
+        System.out.println(RealPathUtil.getRealPath(getActivity().getApplicationContext(), uri));
+        File file = new File(RealPathUtil.getRealPath(getActivity().getApplicationContext(), uri));
+
+        // create RequestBody instance from file
+        RequestBody requestFile = RequestBody
+                .create(MediaType.parse(getContext().getContentResolver().getType(uri)), file);
+
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", name, requestFile);
+
+        // add another part within the multipart request
+        String descriptionString = "hello, this is description speaking";
+        RequestBody description = RequestBody.create(okhttp3.MultipartBody.FORM, descriptionString);
+
+        // finally, execute the request
+        networkApi.upload(description, body).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.i("send", "good" );
+                System.out.println(response);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("send", "fail");
+                t.printStackTrace();
+            }
+        });
+    }
+
 
     //добавление файла
     void AddFileButton(){
@@ -223,6 +264,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
 
         Intent myFiles = new Intent(Intent.ACTION_GET_CONTENT);
         myFiles.setType("*/*");
+        myFiles.addCategory(Intent.CATEGORY_OPENABLE);
         mStartForResult.launch(myFiles);
 
         addFile.setVisibility(View.INVISIBLE);
