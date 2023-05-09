@@ -24,5 +24,5 @@ public interface NetworkApi {
 
     @Multipart
     @POST("/api/uploadfile")
-    Call<ResponseBody> upload(@Part("description") RequestBody description, @Part MultipartBody.Part file);
+    Call<ResponseBody> upload(@Part MultipartBody.Part file);
 }

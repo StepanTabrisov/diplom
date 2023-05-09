@@ -29,9 +29,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
@@ -44,9 +48,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+
+@JsonIgnoreProperties({"add", "addFile", "addFolder", "tag", "ret_tag", "children", "adapter", "open"})
 public class FileSystemFragment extends Fragment implements View.OnClickListener, RecyclerAdapter.OnItemSelectedListener {
 
-    private static final int BUFFER_SIZE = 1024 * 2;
     FloatingActionButton add;
     FloatingActionButton addFile;
     FloatingActionButton addFolder;
@@ -55,10 +60,13 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     public String ret_tag;
     public String tempTitle;
 
-    ArrayList <ListElem> list = new ArrayList<ListElem>();
-    RecyclerAdapter adapter;
-    boolean open = false;
+    public ArrayList<ListElem> list = new ArrayList<ListElem>();
     public ArrayList<Unit> children = new ArrayList<>();
+    public RecyclerAdapter adapter;
+    RecyclerView recyclerView;
+    boolean open = false;
+
+    public Fields fields = new Fields();
 
     FileSystemFragment(){
         super(R.layout.parent_fs_fragment);
@@ -82,7 +90,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         add = view.findViewById(R.id.f_add_fab);
         addFile = view.findViewById(R.id.f_add_file_fab);
         addFolder = view.findViewById(R.id.f_add_folder_fab);
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView = view.findViewById(R.id.recycler_view);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //recyclerView.setHasFixedSize(true);
@@ -101,7 +109,6 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
             ((ITitle)getActivity()).ChangeTitle(tempTitle);
             ((Navigator)getActivity()).SetIcon(R.drawable.ic_baseline_arrow_back_24);
         }
-
         return view;
     }
 
@@ -186,6 +193,12 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     public void onLoadAction(int position) {
         String name = list.get(position).name;
         Toast.makeText(getActivity(),"Скачать элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
+
+        try {
+            SaveAndRead();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //добавление папки
@@ -237,12 +250,8 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         // MultipartBody.Part is used to send also the actual file name
         MultipartBody.Part body = MultipartBody.Part.createFormData("file", name, requestFile);
 
-        // add another part within the multipart request
-        String descriptionString = "hello, this is description speaking";
-        RequestBody description = RequestBody.create(okhttp3.MultipartBody.FORM, descriptionString);
-
         // finally, execute the request
-        networkApi.upload(description, body).enqueue(new Callback<ResponseBody>() {
+        networkApi.upload(body).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Log.i("send", "good" );
@@ -256,7 +265,6 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
             }
         });
     }
-
 
     //добавление файла
     void AddFileButton(){
@@ -378,4 +386,33 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         }
         return  resImage;
     }
+
+    void SaveAndRead() throws IOException {
+        fields.tempTitle = this.tempTitle;
+        fields.list = this.list;
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(fields);
+        System.out.println(list);
+        System.out.println(json);
+
+        Fields a = new Fields();
+        a = objectMapper.readValue(json, Fields.class);
+
+        list.clear();
+        adapter.notifyDataSetChanged();
+        System.out.println(list);
+
+        System.out.println(a.list);
+
+        list.addAll(a.list);
+        //list = a.list;
+        adapter.notifyDataSetChanged();
+        System.out.println(list);
+
+       /* adapter = new RecyclerAdapter(getContext(), list,  this);
+        // устанавливаем для списка адаптер
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();*/
+    }
+
 }

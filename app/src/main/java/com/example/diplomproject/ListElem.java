@@ -9,6 +9,13 @@ public class ListElem {
     public int imageResource;   // ресурс изображения
     public int type;            // тип 0 - файл, 1 - папка
 
+    public ListElem(){
+        name = "";
+        size = "";
+        imageResource = 0;
+        type = 0;
+    }
+
     public ListElem(String name, String size, int type, int imageResource){
         this.name = name;
         this.size = size;
@@ -21,5 +28,15 @@ public class ListElem {
         final String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
         int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
         return new DecimalFormat("#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
+    @Override
+    public String toString() {
+        return "ListElem{" +
+                "name='" + name + '\'' +
+                ", size='" + size + '\'' +
+                ", imageResource=" + imageResource +
+                ", type=" + type +
+                '}';
     }
 }
