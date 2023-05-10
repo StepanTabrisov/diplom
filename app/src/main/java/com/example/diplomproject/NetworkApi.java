@@ -22,6 +22,15 @@ public interface NetworkApi {
     @GET("/users/get-all")
     Call<List<UserData>> getAllUsers();
 
+
+    @POST("/users/check_user")
+    Call<Boolean> RegUser(@Body UserData user);
+
+    @POST("/users/check_user_password")
+    Call<Boolean> AuthUser(@Body UserData user);
+
+///////////////////////////////////////////////////////////////
+
     @Multipart
     @POST("/api/uploadfile")
     Call<ResponseBody> upload(@Part MultipartBody.Part file);
