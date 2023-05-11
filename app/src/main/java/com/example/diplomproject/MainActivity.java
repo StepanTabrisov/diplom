@@ -1,29 +1,21 @@
 package com.example.diplomproject;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-//import android.widget.Toolbar;
-
 import androidx.appcompat.widget.Toolbar;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity implements
          ITitle, ICurrentFragment, Navigator {
 
-    BottomNavigationView bottomNavigation;
-    Toolbar toolbarNavigation;
-    FileSystemFragment lastFragment;
-    FileSystemFragment nextFragment;
-    SettingsFragment settingsFragment;
+    private BottomNavigationView bottomNavigation;
+    private Toolbar toolbarNavigation;
+    private FileSystemFragment lastFragment;
+    private FileSystemFragment nextFragment;
+    private SettingsFragment settingsFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,33 +34,28 @@ public class MainActivity extends AppCompatActivity implements
         ChangeFragment(nextFragment, "parent");
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onStart() {
         super.onStart();
 
         //навигация снизу
-        bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.home:
-                        ChangeFragment((FileSystemFragment) nextFragment);
-                        return true;
-                    case R.id.settings:
-                        ChangeFragment((SettingsFragment) settingsFragment);
-                        return true;
-                }
-                return false;
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()){
+                case R.id.home:
+                    ChangeFragment((FileSystemFragment) nextFragment);
+                    return true;
+                case R.id.settings:
+                    ChangeFragment((SettingsFragment) settingsFragment);
+                    return true;
             }
+            return false;
         });
 
         //навигация сверху
-        toolbarNavigation.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FindFragmentInStack(nextFragment.ret_tag);
-                bottomNavigation.setSelectedItemId(R.id.home);
-            }
+        toolbarNavigation.setNavigationOnClickListener(v -> {
+            FindFragmentInStack(nextFragment.ret_tag);
+            bottomNavigation.setSelectedItemId(R.id.home);
         });
     }
 
@@ -148,5 +135,4 @@ public class MainActivity extends AppCompatActivity implements
     public void DeleteIcon() {
         toolbarNavigation.setNavigationIcon(null);
     }
-
 }

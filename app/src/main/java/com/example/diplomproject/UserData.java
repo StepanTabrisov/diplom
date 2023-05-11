@@ -7,14 +7,12 @@ public class UserData {
     private String login;
     private String email;
     private String password;
-    //private String acceptPassword;
 
     UserData(){
         this.name = "";
         this.login = "";
         this.email = "";
         this.password = "";
-        //this.acceptPassword = "";
     }
 
     @Override

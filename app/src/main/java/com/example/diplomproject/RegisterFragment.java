@@ -30,14 +30,12 @@ public class RegisterFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.registration_fragment, container, false);
-
         inputName = view.findViewById(R.id.r_input_name);
         inputLogin = view.findViewById(R.id.r_input_login);
         inputEmail = view.findViewById(R.id.r_input_email);
         inputPassword = view.findViewById(R.id.r_input_password);
         inputAcceptPassword = view.findViewById(R.id.r_input_accept_password);
         regButton = view.findViewById(R.id.registration_button);
-
         return view;
     }
 
@@ -48,36 +46,45 @@ public class RegisterFragment extends Fragment {
         RetrofitService retrofitService  = new RetrofitService();
         NetworkApi networkApi = retrofitService.getRetrofit().create(NetworkApi.class);
 
-        regButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        regButton.setOnClickListener(v -> {
 
-                String name = inputName.getText().toString();
-                String login = inputLogin.getText().toString();
-                String email = inputEmail.getText().toString();
-                String password = inputPassword.getText().toString();
+            String name = inputName.getText().toString();
+            String login = inputLogin.getText().toString();
+            String email = inputEmail.getText().toString();
+            String password = inputPassword.getText().toString();
 
-                UserData user = new UserData();
-                user.SetName(name);
-                user.SetLogin(login);
-                user.SetEmail(email);
-                user.SetPassword(password);
+            UserData userData = new UserData();
+            userData.SetName(name);
+            userData.SetLogin(login);
+            userData.SetEmail(email);
+            userData.SetPassword(password);
 
-                networkApi.RegistrationUser(user).enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Toast.makeText(getActivity(), "Users add success", Toast.LENGTH_SHORT).show();
-                    }
+            //Правильный вариант (финальный) раскомментировать !
+            /*try {
+                Call<Boolean> call = networkApi.RegUser(userData);
+                Response<Boolean> response = call.execute();
+                if(Boolean.TRUE.equals(response.body())){
+                    startActivity(new Intent(getContext(), MainActivity.class));
+                } else {
+                    // Вывод ошибки на экран
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
 
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            //неправильнй вариант
+            networkApi.RegistrationUser(userData).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    Toast.makeText(getActivity(), "Users add success", Toast.LENGTH_SHORT).show();
+                }
 
-                startActivity(new Intent(getContext(), MainActivity.class));
-            }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                }
+            });
+            startActivity(new Intent(getContext(), MainActivity.class));
         });
-
     }
 }

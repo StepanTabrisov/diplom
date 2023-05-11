@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-
 import androidx.loader.content.CursorLoader;
 
 public class RealPathUtil {
@@ -52,7 +51,7 @@ public class RealPathUtil {
     public static String getRealPathFromURI_BelowAPI11(Context context, Uri contentUri) {
         String[] proj = {MediaStore.Images.Media.DATA};
         Cursor cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
-        int column_index = 0;
+        int column_index;
         String result = "";
         if (cursor != null) {
             column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -142,14 +141,11 @@ public class RealPathUtil {
         return null;
     }
 
-    public static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
+    public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
 
         Cursor cursor = null;
         final String column = "_data";
-        final String[] projection = {
-                column
-        };
+        final String[] projection = { column };
 
         try {
             cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
@@ -164,46 +160,30 @@ public class RealPathUtil {
         return null;
     }
 
-
     public static String getFilePath(Context context, Uri uri) {
-
-        Cursor cursor = null;
-        final String[] projection = {
-                MediaStore.MediaColumns.DISPLAY_NAME
-        };
-
-        try {
-            cursor = context.getContentResolver().query(uri, projection, null, null,
-                    null);
+        final String[] projection = { MediaStore.MediaColumns.DISPLAY_NAME };
+        try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 final int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME);
                 return cursor.getString(index);
             }
-        } finally {
-            if (cursor != null)
-                cursor.close();
         }
         return null;
     }
-
 
     public static boolean isExternalStorageDocument(Uri uri) {
         return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
 
-
     public static boolean isDownloadsDocument(Uri uri) {
         return "com.android.providers.downloads.documents".equals(uri.getAuthority());
     }
-
 
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
-
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
-
 }

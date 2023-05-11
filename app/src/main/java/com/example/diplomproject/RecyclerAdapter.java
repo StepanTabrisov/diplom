@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,10 +23,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private final Context myCtx;
 
     public RecyclerAdapter(Context myCtx, List<ListElem> list, OnItemSelectedListener listener) {
-        this.listener = listener;
-        this.inflater = LayoutInflater.from(myCtx);
-        this.list = list;
-        this.myCtx = myCtx;
+        this.listener   = listener;
+        this.inflater   = LayoutInflater.from(myCtx);
+        this.list       = list;
+        this.myCtx      = myCtx;
     }
 
     @NonNull
@@ -45,8 +44,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.nameItem.setText(elem.name);
         holder.sizeItem.setText(elem.size);
 
-
-
         if(elem.type == 0){
             holder.imageItem.setImageResource(elem.imageResource);
             holder.nameItem.setText(elem.name);
@@ -58,33 +55,23 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             holder.loadItemButton.setVisibility(View.INVISIBLE);
         }
 
-        holder.loadItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    int position = holder.getAdapterPosition();
-                    listener.onLoadAction(position);
-                }
-            }
+        holder.loadItemButton.setOnClickListener(v -> {
+            if (listener == null) return;
+            int position1 = holder.getAdapterPosition();
+            listener.onLoadAction(position1);
         });
 
-        holder.menuItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(myCtx, holder.menuItemButton);
-                popup.inflate(R.menu.item_menu);
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (listener != null) {
-                            int position = holder.getAdapterPosition();
-                            listener.onMenuAction(position, item);
-                        }
-                        return false;
-                    }
-                });
-                popup.show();
-            }
+        holder.menuItemButton.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(myCtx, holder.menuItemButton);
+            popup.inflate(R.menu.item_menu);
+
+            popup.setOnMenuItemClickListener(item -> {
+                if (listener == null) return false;
+                int position1 = holder.getAdapterPosition();
+                listener.onMenuAction(position1, item);
+                return false;
+            });
+            popup.show();
         });
     }
 
@@ -120,9 +107,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            if (listener != null) {
-                listener.onItemSelected(position);
-            }
+            if (listener == null) return;
+            listener.onItemSelected(position);
         }
     }
 }
