@@ -82,26 +82,6 @@ public class EnterFragment extends Fragment {
                     e.printStackTrace();
                 }
             }).start();
-
-            // Не правильный вариант / Асинхронный
-            /*networkApi.CheckUserData(login.trim()).enqueue(new Callback<UserData>() {
-                @Override
-                public void onResponse(Call<UserData> call, Response<UserData> response) {
-                    Toast.makeText(getActivity(), "User find", Toast.LENGTH_SHORT).show();
-                    UserData user = response.body();
-                    System.out.println(response.body());
-                    Log.i("ON RESPONSE", user.toString());
-                }
-
-                @Override
-                public void onFailure(Call<UserData> call, Throwable t) {
-                    Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
-                    System.out.println(t.getMessage());
-                    Logger.getLogger(getActivity().getClass().getName()).log(Level.SEVERE, "Error find", t);
-                }
-            });
-            startActivity(new Intent(getContext(), MainActivity.class));
-        });*/
         });
     }
 

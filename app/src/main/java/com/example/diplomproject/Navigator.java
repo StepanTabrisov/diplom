@@ -7,5 +7,4 @@ public interface Navigator {
     void DeleteIcon();
     void FindFragmentInStack(String tag);
     void CreateFragment(String tag, String ret_tag, String title, UserData userData);
-    UserData getUser();
 }

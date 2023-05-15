@@ -79,8 +79,6 @@ public class FileSystemFragment extends Fragment
         tag = "parent";
         ret_tag = "";
         tempTitle = "Файлы";
-        //userData = requireActivity().getIntent().getExtras().getParcelable(UserData.class.getSimpleName());
-        //InitList(tempTitle);
     }
 
     FileSystemFragment(UserData userData){

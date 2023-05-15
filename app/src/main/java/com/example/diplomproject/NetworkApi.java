@@ -15,15 +15,6 @@ import retrofit2.http.Streaming;
 
 public interface NetworkApi {
 
-    @POST("/users/find-user")
-    Call<UserData> CheckUserData(@Body String login);
-
-    @POST("/users/add")
-    Call<Void> RegistrationUser(@Body UserData user);
-
-    @GET("/users/get-all")
-    Call<List<UserData>> getAllUsers();
-
     // Финальный вариант регистрации / авторизации
     @POST("/users/check_user")
     Call<Boolean> RegUser(@Body UserData user);
@@ -38,11 +29,6 @@ public interface NetworkApi {
     //Отправка списка
     @POST("/api/save/{username}")
     Call<ResponseBody> SaveDataList(@Path("username") String username, @Body Fields data);
-
-    // загрузка файлов на сервер
-    @Multipart
-    @POST("/api/uploadfile")
-    Call<ResponseBody> upload(@Part MultipartBody.Part file);
 
     // загрузка файла на сервер (финальный вариант)
     @Multipart

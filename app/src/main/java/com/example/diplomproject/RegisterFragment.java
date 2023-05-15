@@ -87,32 +87,6 @@ public class RegisterFragment extends Fragment {
                 inputPassword.setText("");
                 inputAcceptPassword.setText("");
             }
-            //Правильный вариант (финальный) раскомментировать !
-            /*try {
-                Call<Boolean> call = networkApi.RegUser(userData);
-                Response<Boolean> response = call.execute();
-                if(Boolean.TRUE.equals(response.body())){
-                    startActivity(new Intent(getContext(), MainActivity.class));
-                } else {
-                    // Вывод ошибки на экран
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
-
-            //неправильнй вариант
-            /*networkApi.RegistrationUser(userData).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    Toast.makeText(getActivity(), "Users add success", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                }
-            });
-            startActivity(new Intent(getContext(), MainActivity.class));*/
         });
     }
 

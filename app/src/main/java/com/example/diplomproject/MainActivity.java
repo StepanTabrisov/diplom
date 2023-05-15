@@ -27,9 +27,6 @@ public class MainActivity extends AppCompatActivity implements
         Bundle arg = getIntent().getExtras();
         if(arg!=null){
             userData = arg.getParcelable(UserData.class.getSimpleName());
-            System.out.println(userData);
-        }else{
-            System.out.println("NULL");
         }
 
         settingsFragment = new SettingsFragment();
@@ -42,8 +39,6 @@ public class MainActivity extends AppCompatActivity implements
 
         bottomNavigation = findViewById(R.id.bottomNavigationView);
         ChangeFragment(nextFragment, "parent");
-
-
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -85,11 +80,6 @@ public class MainActivity extends AppCompatActivity implements
         lastFragment = nextFragment;
         nextFragment = new FileSystemFragment(tag, ret_tag, title, userData);
         ChangeFragment(nextFragment, nextFragment.tag);
-    }
-
-    @Override
-    public UserData getUser() {
-        return userData;
     }
 
     //смена фрагмента на экране
