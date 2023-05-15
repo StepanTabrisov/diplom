@@ -2,6 +2,8 @@ package com.example.diplomproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,29 +56,35 @@ public class EnterFragment extends Fragment {
                 .commit());
 
         enterButton.setOnClickListener(v -> {
-            String login = inputLogin.getText().toString();
-            String password = inputPassword.getText().toString();
+            String login = ReadLogin();
+            String password = ReadPassword();
 
             UserData userData = new UserData();
             userData.SetLogin(login);
             userData.SetPassword(password);
 
-            //Правильный вариант (финальный) раскомментировать !
-            /*try {
-                Call<Boolean> call = networkApi.AuthUser(userData);
-                Response<Boolean> response = call.execute();
-                if(Boolean.TRUE.equals(response.body())){
-                    startActivity(new Intent(getContext(), MainActivity.class));
-                } else {
-                    // Вывод ошибки на экран
+            new Thread(() -> {
+                try {
+                    Call<Boolean> call = networkApi.AuthUser(userData);
+                    Response<Boolean> response = call.execute();
+                    if(Boolean.TRUE.equals(response.body())){
+                        Intent intent = new Intent(getContext(), MainActivity.class);
+                        intent.putExtra(UserData.class.getSimpleName(), userData);
+                        startActivity(intent);
+                    } else {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            Toast.makeText(getActivity(), "Неверный логин или пароль!", Toast.LENGTH_SHORT).show();
+                            inputPassword.setText("");
+                            inputLogin.setText("");
+                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            */
+            }).start();
 
             // Не правильный вариант / Асинхронный
-            networkApi.CheckUserData(login.trim()).enqueue(new Callback<UserData>() {
+            /*networkApi.CheckUserData(login.trim()).enqueue(new Callback<UserData>() {
                 @Override
                 public void onResponse(Call<UserData> call, Response<UserData> response) {
                     Toast.makeText(getActivity(), "User find", Toast.LENGTH_SHORT).show();
@@ -92,6 +101,15 @@ public class EnterFragment extends Fragment {
                 }
             });
             startActivity(new Intent(getContext(), MainActivity.class));
+        });*/
         });
+    }
+
+    public String ReadPassword() {
+        return inputPassword.getText().toString().trim();
+    }
+
+    private String ReadLogin() {
+        return inputLogin.getText().toString().trim();
     }
 }

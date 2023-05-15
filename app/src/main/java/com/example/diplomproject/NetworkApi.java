@@ -11,6 +11,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Streaming;
 
 public interface NetworkApi {
 
@@ -24,7 +25,6 @@ public interface NetworkApi {
     Call<List<UserData>> getAllUsers();
 
     // Финальный вариант регистрации / авторизации
-
     @POST("/users/check_user")
     Call<Boolean> RegUser(@Body UserData user);
 
@@ -39,7 +39,6 @@ public interface NetworkApi {
     @POST("/api/save/{username}")
     Call<ResponseBody> SaveDataList(@Path("username") String username, @Body Fields data);
 
-
     // загрузка файлов на сервер
     @Multipart
     @POST("/api/uploadfile")
@@ -49,6 +48,11 @@ public interface NetworkApi {
     @Multipart
     @POST("/api/upload/{username}")
     Call<ResponseBody> uploadFile(@Path("username") String username, @Part MultipartBody.Part file);
+
+    // скачивание файлов с сервера
+    @Streaming
+    @POST("/api/download/{username}")
+    Call<ResponseBody> downloadFile(@Path("username") String username, @Body String data);
 
 
 }

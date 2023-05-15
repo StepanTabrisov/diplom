@@ -17,13 +17,23 @@ public class MainActivity extends AppCompatActivity implements
     private FileSystemFragment nextFragment;
     private SettingsFragment settingsFragment;
 
+    public UserData userData = new UserData();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
+        Bundle arg = getIntent().getExtras();
+        if(arg!=null){
+            userData = arg.getParcelable(UserData.class.getSimpleName());
+            System.out.println(userData);
+        }else{
+            System.out.println("NULL");
+        }
+
         settingsFragment = new SettingsFragment();
-        nextFragment = new FileSystemFragment();
+        nextFragment = new FileSystemFragment(userData);
         lastFragment = nextFragment;
 
         toolbarNavigation = findViewById(R.id.nav_toolbar);
@@ -32,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements
 
         bottomNavigation = findViewById(R.id.bottomNavigationView);
         ChangeFragment(nextFragment, "parent");
+
+
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -43,10 +55,10 @@ public class MainActivity extends AppCompatActivity implements
         bottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()){
                 case R.id.home:
-                    ChangeFragment((FileSystemFragment) nextFragment);
+                    ChangeFragment(nextFragment);
                     return true;
                 case R.id.settings:
-                    ChangeFragment((SettingsFragment) settingsFragment);
+                    ChangeFragment(settingsFragment);
                     return true;
             }
             return false;
@@ -69,10 +81,15 @@ public class MainActivity extends AppCompatActivity implements
 
     //создание фрагмента INavigator
     @Override
-    public void CreateFragment(String tag, String ret_tag, String title) {
+    public void CreateFragment(String tag, String ret_tag, String title, UserData userData) {
         lastFragment = nextFragment;
-        nextFragment = new FileSystemFragment(tag, ret_tag, title);
+        nextFragment = new FileSystemFragment(tag, ret_tag, title, userData);
         ChangeFragment(nextFragment, nextFragment.tag);
+    }
+
+    @Override
+    public UserData getUser() {
+        return userData;
     }
 
     //смена фрагмента на экране
@@ -83,19 +100,6 @@ public class MainActivity extends AppCompatActivity implements
                 .addToBackStack(null)
                 .commit();
     }
-
-    /*public void ChangeFragment(FileSystemFragment fragment){
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
-    }
-    public void ChangeFragment(SettingsFragment fr){
-        getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment_container, fr)
-                .addToBackStack(null)
-                .commit();
-    }*/
 
     //смена фрагмента на экране
     public void ChangeFragment(FileSystemFragment fragment, String tag){

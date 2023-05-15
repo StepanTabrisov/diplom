@@ -9,6 +9,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,15 +32,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
 import okhttp3.MediaType;
@@ -47,8 +53,10 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.HTTP;
 
-public class FileSystemFragment extends Fragment implements View.OnClickListener, RecyclerAdapter.OnItemSelectedListener {
+public class FileSystemFragment extends Fragment
+        implements View.OnClickListener, RecyclerAdapter.OnItemSelectedListener {
 
     private FloatingActionButton add;
     private FloatingActionButton addFile;
@@ -61,27 +69,35 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     public ArrayList<ListElem> list = new ArrayList<>();
     public ArrayList<Unit> children = new ArrayList<>();
     public RecyclerAdapter adapter;
+
     private boolean open = false;
     private boolean changed = false;
-
-    public Fields fields = new Fields();
+    public UserData userData;
 
     FileSystemFragment(){
         super(R.layout.parent_fs_fragment);
         tag = "parent";
         ret_tag = "";
         tempTitle = "Файлы";
-        Log.i("CONSTRUCTOR", "CONSTRUCTOR FRAGMENT");
+        //userData = requireActivity().getIntent().getExtras().getParcelable(UserData.class.getSimpleName());
+        //InitList(tempTitle);
+    }
+
+    FileSystemFragment(UserData userData){
+        super(R.layout.parent_fs_fragment);
+        tag = "parent";
+        ret_tag = "";
+        tempTitle = "Файлы";
+        this.userData = userData;
         InitList(tempTitle);
     }
 
-    public FileSystemFragment(String tag, String ret_tag, String tempTitle){
-        //this();
+    public FileSystemFragment(String tag, String ret_tag, String tempTitle, UserData userData){
         this.tag = tag;
         this.ret_tag = ret_tag;
         this.tempTitle = tempTitle;
+        this.userData = userData;
         InitList(tempTitle);
-        Log.i("CONSTRUCTOR WITH PARAM", "CONSTRUCTOR WITH PARAM FRAGMENT");
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -94,41 +110,25 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         addFolder = view.findViewById(R.id.f_add_folder_fab);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         adapter = new RecyclerAdapter(getContext(), list,  this); //Создаем и устанавливаем адаптер
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
-        Log.i("ON CREATE VIEW", "CREATE VIEW FRAGMENT");
-
-        if(Objects.equals(tag, "parent")){
-            ((ITitle)getActivity()).ChangeTitle("Файлы"); //установка заголовка
-            ((Navigator)getActivity()).DeleteIcon();             //удаление иконки назад
-        }else{
-            ((ITitle)getActivity()).ChangeTitle(tempTitle);
-            ((Navigator)getActivity()).SetIcon(R.drawable.ic_baseline_arrow_back_24);
-        }
         return view;
     }
-
 
     @Override
     public void onStart() {
         super.onStart();
-
-        Log.i("ON START", "START FRAGMENT");
-
+        if(Objects.equals(tag, "parent")){
+            Objects.requireNonNull((ITitle)getActivity()).ChangeTitle("Файлы"); //установка заголовка
+            ((Navigator)getActivity()).DeleteIcon();                                    //удаление иконки назад
+        }else{
+            Objects.requireNonNull((ITitle)getActivity()).ChangeTitle(tempTitle);
+            ((Navigator)getActivity()).SetIcon(R.drawable.ic_baseline_arrow_back_24);
+        }
         add.setOnClickListener(this);
         addFile.setOnClickListener(this);
         addFolder.setOnClickListener(this);
-
-        /*if(Objects.equals(tag, "parent")){
-            ((ITitle)getActivity()).ChangeTitle("Файлы");   //установка заголовка
-            ((Navigator)getActivity()).DeleteIcon();               //удаление иконки назад
-        }else{
-            ((ITitle)getActivity()).ChangeTitle(tempTitle);
-            ((Navigator)getActivity()).SetIcon(R.drawable.ic_baseline_arrow_back_24);
-        }*/
     }
 
     // обработка нажатий на кнопки
@@ -151,18 +151,13 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     //обработка нажатия на элемент списка
     @Override
     public void onItemSelected(int position) {
-        String name = list.get(position).name;
-        Toast.makeText(getActivity(),"Выбран элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
-
         ListElem curr = list.get(position);
         if(curr.type == 1){
-            ((ICurrentFragment)getActivity()).SetFragment(this);
+            Objects.requireNonNull((ICurrentFragment)getActivity()).SetFragment(this);
             if(children.get(position).created){
-                Log.i("CHANGE", "FRAGMENT FIND");
                 ((Navigator)getActivity()).FindFragmentInStack(children.get(position).tag);
             }else{
-                Log.i("CHANGE", "FRAGMENT CREATE");
-                ((Navigator)getActivity()).CreateFragment(children.get(position).tag, children.get(position).ret_tag, curr.name);
+                ((Navigator)getActivity()).CreateFragment(children.get(position).tag, children.get(position).ret_tag, curr.name, userData);
                 children.get(position).created = true;
             }
         }
@@ -172,20 +167,15 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     @SuppressLint({"NonConstantResourceId", "NotifyDataSetChanged"})
     @Override
     public void onMenuAction(int position, MenuItem item) {
-        String name = list.get(position).name;
         switch (item.getItemId()) {
             case R.id.delete_menu:
-                Toast.makeText(getActivity(),"Удалить элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
                 if(list.get(position).type == 1){
-                    list.remove(position);
                     children.remove(position);
-                }else{
-                    list.remove(position);
                 }
+                list.remove(position);
                 adapter.notifyDataSetChanged();
                 break;
             case R.id.rename_menu:
-                Toast.makeText(getActivity(),"Переименовать элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
                 RenameCustomDialog(position);
                 break;
         }
@@ -195,18 +185,70 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
     @Override
     public void onLoadAction(int position) {
         String name = list.get(position).name;
-        Toast.makeText(getActivity(),"Скачать элемент :" + name + " Индекс: " + position,Toast.LENGTH_SHORT).show();
+        downloadFile(name);
+    }
+
+    public void downloadFile(String filename){
+        RetrofitService retrofitService  = new RetrofitService();
+        NetworkApi networkApi = retrofitService.getRetrofit().create(NetworkApi.class);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        networkApi.downloadFile(userData.GetLogin(), filename).enqueue(new Callback<ResponseBody>() {
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                executorService.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(saveFile(filename, Objects.requireNonNull(response.body()))){
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                Toast.makeText(getActivity(), "Файл загружен", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    }
+                });
+            }
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    public boolean saveFile(String filename, ResponseBody body){
+        File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
         try {
-            SaveAndRead();
+            byte[] fileReader = new byte[4096];
+            inputStream = body.byteStream();
+            outputStream = new FileOutputStream(newFile);
+
+            while (true) {
+                int read = inputStream.read(fileReader);
+                if (read == -1) break;
+                outputStream.write(fileReader, 0, read);
+            }
+            outputStream.flush();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            try{
+                inputStream.close();
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+                return false;
+            }catch (IOException a){
+                e.printStackTrace();
+                return false;
+            }
         }
     }
 
     //добавление папки
     public void AddFolderButton(){
-        AddFolderCustomDialog();            //диалог для ввода названия папки
-        Toast.makeText(getActivity(),"добавить папку",Toast.LENGTH_SHORT).show();
+        AddFolderCustomDialog();                //диалог для ввода названия папки
         addFile.setVisibility(View.INVISIBLE);
         addFolder.setVisibility(View.INVISIBLE);
         open = false;
@@ -218,9 +260,9 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        Uri uri = result.getData().getData();
+                        Uri uri = Objects.requireNonNull(result.getData()).getData();
 
-                        Cursor returnCursor = getContext().getContentResolver().query(uri, null, null, null, null);
+                        Cursor returnCursor = requireContext().getContentResolver().query(uri, null, null, null, null);
                         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                         int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
                         returnCursor.moveToFirst();
@@ -241,45 +283,29 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
             });
 
     private void UploadFile(Uri uri, String name) {
+        File file = new File(RealPathUtil.getRealPath(requireContext(), uri));
+
         RetrofitService retrofitService  = new RetrofitService();
         NetworkApi networkApi = retrofitService.getRetrofit().create(NetworkApi.class);
-
-        //System.out.println(RealPathUtil.getRealPath(getActivity().getApplicationContext(), uri));
-        File file = new File(RealPathUtil.getRealPath(getActivity().getApplicationContext(), uri));
 
         RequestBody requestFile = RequestBody.create(MediaType.parse(getContext().getContentResolver().getType(uri)), file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("file", name, requestFile);
 
-        // Брать имя пользователя(логин) из класса UserData, исправить uploadFile(userData.getLogin(), body)
-        // Загрузка файла на сервер асинхронно
-        networkApi.uploadFile("bbb9", body).enqueue(new Callback<ResponseBody>() {
+        networkApi.uploadFile(userData.GetLogin(), body).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.i("send", "good" );
-                System.out.println(response);
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if(response.code() == 200){
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        Toast.makeText(getActivity(), "Файл отправлен!", Toast.LENGTH_SHORT).show();
+                    });
+                }
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.i("send", "fail");
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 t.printStackTrace();
             }
         });
-
-        /*// Загрузка файла на сервер асинхронно
-        networkApi.upload(body).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.i("send", "good" );
-                System.out.println(response);
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.i("send", "fail");
-                t.printStackTrace();
-            }
-        });*/
     }
 
     //добавление файла
@@ -305,7 +331,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         addFolder.setVisibility(invisible);
         open = b;
     }
-    //Переделать
+
     // диалог для добавления папки
     @SuppressLint("NotifyDataSetChanged")
     void AddFolderCustomDialog() {
@@ -334,7 +360,6 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         dialog.show();
     }
 
-    //Переделать
     // диалог
     @SuppressLint("NotifyDataSetChanged")
     void RenameCustomDialog(int position) {
@@ -355,7 +380,7 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
             list.get(position).name = name_folder;  // изменение названия
             adapter.notifyDataSetChanged();
             if(children.get(position).created){
-                ((ITitle)getActivity()).ChangeFragmentTitle(name_folder, children.get(position).tag);
+                Objects.requireNonNull((ITitle)getActivity()).ChangeFragmentTitle(name_folder, children.get(position).tag);
             }
             dialog.cancel();
         });
@@ -376,11 +401,10 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
         return 0;
     }
 
-    // get user name from class GetDataList(userData.getLogin(), title)
     void InitList(String title){
-            RetrofitService retrofitService  = new RetrofitService();
-            NetworkApi networkApi = retrofitService.getRetrofit().create(NetworkApi.class);
-            networkApi.GetDataList("bbb9", title).enqueue(new Callback<Fields>() {
+        RetrofitService retrofitService  = new RetrofitService();
+        NetworkApi networkApi = retrofitService.getRetrofit().create(NetworkApi.class);
+        networkApi.GetDataList(userData.GetLogin(), title).enqueue(new Callback<Fields>() {
                 @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onResponse(Call<Fields> call, Response<Fields> response) {
@@ -397,54 +421,9 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
             });
     }
 
-    void SaveAndRead() throws IOException {
-        fields.tempTitle = this.tempTitle;
-        fields.list = this.list;
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(fields);
-        System.out.println(list);
-        System.out.println(json);
-
-        Fields a = new Fields();
-        a = objectMapper.readValue(json, Fields.class);
-
-        list.clear();
-        adapter.notifyDataSetChanged();
-        System.out.println(list);
-
-        System.out.println(a.list);
-
-        list.addAll(a.list);
-        //list = a.list;
-        adapter.notifyDataSetChanged();
-        System.out.println(list);
-
-       /* adapter = new RecyclerAdapter(getContext(), list,  this);
-        // устанавливаем для списка адаптер
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();*/
-    }
-
-
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.i("ON PAUSE", "PAUSE FRAGMENT");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i("ON RESUME", "RESUME FRAGMENT");
-    }
-
-    // get user name from class SaveDataList(userData.getLogin(), title)
     @Override
     public void onStop() {
         super.onStop();
-        Log.i("ON STOP", "STOP FRAGMENT");
-
         if(changed){
             changed = false;
             Fields a = new Fields();
@@ -452,36 +431,16 @@ public class FileSystemFragment extends Fragment implements View.OnClickListener
             a.list = list;
             RetrofitService retrofitService  = new RetrofitService();
             NetworkApi networkApi = retrofitService.getRetrofit().create(NetworkApi.class);
-            networkApi.SaveDataList("bbb9", a).enqueue(new Callback<ResponseBody>() {
+            networkApi.SaveDataList(userData.GetLogin(), a).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     System.out.println(response.body());
                 }
-
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                    t.printStackTrace();
                 }
             });
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i("ON DESTROY", "DESTROY FRAGMENT");
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.i("ON SAVE INSTANCE", "SAVE INSTANCE FRAGMENT");
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.i("ON CREATE", "CREATE FRAGMENT");
-
     }
 }
